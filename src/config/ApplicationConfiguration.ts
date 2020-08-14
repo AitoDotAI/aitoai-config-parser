@@ -39,6 +39,9 @@ export class ApplicationConfiguration {
   private readonly fileConfig: dotenv.IEnvironmentMap
   private readonly processEnvConfig: dotenv.IEnvironmentMap
 
+  private readonly fileConfigFiles: string[] = []
+  private readonly defaultConfigFile: string[] = []
+
   private readonly defaultDotenvConfig = {
     assignToProcessEnv: false,
     includeProcessEnv: false,
@@ -49,14 +52,27 @@ export class ApplicationConfiguration {
    * Create the configuration map by reading the files from left to right. Order is MSV, so
    * values are set on first encounter, and treated as immutable
    *
+   * NOTE: AITO_CONFIG_DIR is a custom variable we declare to parse all the files against it.
+   *
    * @param configfilenames array of config files to parse. '.env.default' is implicit and does not need to be specified
    */
   constructor(
-    configfilenames: string[] = [`.env.${process.env.NODE_ENV}`, '.env'],
-    defaultsFile: string = '.env.defaults',
+    configfilenames: string[] = [
+      `${process.env.AITO_CONFIG_DIR}/.env.${process.env.NODE_ENV}`,
+      `.env.${process.env.NODE_ENV}`,
+      `${process.env.AITO_CONFIG_DIR}/.env`,
+      process.env.DOTENV_CONFIG_PATH, '.env'
+    ],
+    defaultsFile: string = [
+      process.env.DOTENV_CONFIG_DEFAULTS,
+      `${process.env.AITO_CONFIG_DIR}/.env.defaults`,
+      '.env.defaults'
+    ].find(s => !_.isEmpty(s)),
     includeDefaultsOnMissingFile: boolean = true,
     traceLevelLogging: boolean = false,
   ) {
+    this.defaultConfigFile.push(defaultsFile)
+
     const makeAbsolute = (p: string): string => {
       if (path.isAbsolute(p)) {
         return p
@@ -66,9 +82,12 @@ export class ApplicationConfiguration {
     }
 
     const fileBasedConfig = configfilenames
+      .filter(cfn => !_.isEmpty(cfn))
       .map(cf => makeAbsolute(cf))
       .filter(fqfn => fs.existsSync(fqfn))
       .map(fp => {
+        this.fileConfigFiles.push(fp) // To make debugging easier
+
         // Load the config, but exclude process.env-values
         const loadedConfig = dotenv.load({
           ...this.defaultDotenvConfig,
@@ -90,6 +109,10 @@ export class ApplicationConfiguration {
     )
     this.fileConfig = { ...defaultConfig, ...fileBasedConfig }
     this.processEnvConfig = process.env
+
+    if (traceLevelLogging) {
+      console.log(`${ApplicationConfiguration.name} is parsing the following files for env variables: ${JSON.stringify([...this.fileConfigFiles, this.defaultConfigFile])}`)
+    }
   }
 
   private static getValue<A>(
@@ -108,8 +131,10 @@ export class ApplicationConfiguration {
     }
 
     if (assertValueExist && _.isUndefined(typedValue)) {
+      // Useful for debugging.
+      // console.error(`Trying to parse the variable ${name} from the map ${JSON.stringify(from, null, 2)}`)
       throw new Error(
-        `Required environment variable ${name} is not set properly`,
+        `Required environment variable ${name} is not set properly.`,
       )
     }
 
