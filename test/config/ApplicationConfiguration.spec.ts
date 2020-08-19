@@ -9,7 +9,7 @@ import {
 import { v4 as uuid } from 'uuid'
 
 describe('ApplicationConfiguration', () => {
-  let node_env: string
+  let nodeEnv: string
   let appConfig: ApplicationConfiguration
   let appConfigWithDefaults: ApplicationConfiguration
   let missingAppConfig: ApplicationConfiguration
@@ -26,14 +26,14 @@ describe('ApplicationConfiguration', () => {
   }
 
   beforeEach(async () => {
-    node_env = process.env.NODE_ENV || 'test'
+    nodeEnv = process.env.NODE_ENV || 'test'
     appConfig = new ApplicationConfiguration([testConfigFile])
     appConfigWithDefaults = new ApplicationConfiguration([testConfigFile], testDefaultsFile)
     missingAppConfig = createConfigFromMissingFile()
   })
 
   afterEach(async () => {
-    (process.env as any).NODE_ENV = node_env
+    (process.env as any).NODE_ENV = nodeEnv
   })
 
   it('should load the config from the specified file', () => {

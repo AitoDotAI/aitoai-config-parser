@@ -68,8 +68,8 @@ export class ApplicationConfiguration {
       `${process.env.AITO_CONFIG_DIR}/.env.defaults`,
       '.env.defaults'
     ].find(s => !_.isEmpty(s)),
-    includeDefaultsOnMissingFile: boolean = true,
-    traceLevelLogging: boolean = false,
+    includeDefaultsOnMissingFile = true,
+    traceLevelLogging = false,
   ) {
     this.defaultConfigFile.push(defaultsFile)
 
@@ -119,7 +119,7 @@ export class ApplicationConfiguration {
     from: dotenv.IEnvironmentMap[],
     name: string,
     castType: (val: any, name: string) => A,
-    assertValueExist: boolean = false,
+    assertValueExist = false,
   ): A {
     const envMap: dotenv.IEnvironmentMap = from.find(
       iem => !_.isUndefined(iem[name]),
@@ -143,7 +143,7 @@ export class ApplicationConfiguration {
 
   private getDefaultConfig(
     defaultsFile: string,
-    loadFile: boolean = true,
+    loadFile = true,
   ): dotenv.IEnvironmentMap {
     let defaultValues = {} as dotenv.IEnvironmentMap
 
