@@ -6,7 +6,7 @@ import dotenv = require('dotenv-extended')
 
 /* tslint:disable:no-console */
 const PRODUCTION_NODE_ENV = 'production'
-const DEVELOPMENT_NODE_ENV = 'development'
+//const DEVELOPMENT_NODE_ENV = 'development'
 
 export function string(val: any): string {
   return String(val)
