@@ -64,6 +64,8 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
       overrideProcessEnv: false,
     }
 
+    const absoluteDefaultsFile = makeAbsolute(defaultsFile)
+
     const fileConfigFiles = configfilenames
       .map(cf => makeAbsolute(cf))
       .filter(fqfn => fs.existsSync(fqfn))
@@ -73,7 +75,7 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
         // Load the config, but exclude process.env-values
         const loadedConfig = dotenv.load({
           ...defaultDotenvConfig,
-          defaults: defaultsFile,
+          defaults: absoluteDefaultsFile,
           path: fp,
         })
         return loadedConfig
@@ -90,12 +92,12 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
     if (includeDefaultsOnMissingFile) {
       defaultConfig = dotenv.load({
         ...defaultDotenvConfig,
-        defaults: defaultsFile,
+        defaults: absoluteDefaultsFile,
       })
     }
 
     if (traceLevelLogging) {
-      console.log(`EnvironmentConfig is parsing the following files for env variables: ${JSON.stringify([...fileConfigFiles, defaultsFile])}`)
+      console.log(`ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify([...fileConfigFiles, absoluteDefaultsFile])}`)
     }
 
     return { ...defaultConfig, ...fileBasedConfig }
@@ -110,7 +112,11 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
       const result = parse(environmentConfig, fileBasedConfig, env)
 
       Object.getOwnPropertyNames(result).forEach((name) => {
-        Object.defineProperty(this, name, { enumerable: true, writable: false })
+        Object.defineProperty(this, name, {
+          enumerable: true,
+          writable: false,
+          value: result[name]
+        })
       })
     }
   } as new() => ConfigTypeOf<T>
