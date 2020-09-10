@@ -28,7 +28,7 @@ export function productionVariable<A>(f: VariableParser<A>): ['production', Vari
 }
 
 export function optional<A>(f: (value: string) => A): VariableParser<A | undefined> {
-  return (value: string | undefined) => value && f(value)
+  return (value: string | undefined) => value === undefined ? undefined : f(value)
 }
 
 export function required<A>(f: (value: string) => A): VariableParser<A> {
