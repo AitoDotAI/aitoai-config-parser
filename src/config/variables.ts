@@ -1,13 +1,13 @@
 export type ConfigSource = Record<string, string>
 
 export type NodeEnvironment = 'development' | 'production'
-export type VariableRules = 'production' | 'default'
+export type VariableRule = 'production' | 'default'
 
 export type VariableParser<A> = (value: string | undefined) => A
-export type ConfigDeclaration<A> = [VariableRules, VariableParser<A>]
+export type ConfigDeclaration<A> = [VariableRule, VariableParser<A>]
 
 type DefinedType<A extends ConfigDeclaration<any>> =
-  A extends [VariableRules, VariableParser<infer B>] ? B : never
+  A extends [VariableRule, VariableParser<infer B>] ? B : never
 
 export type ConfigTypeOf<T extends Record<string, ConfigDeclaration<any>>> =
   { readonly [key in keyof T]: DefinedType<T[key]> }
@@ -19,25 +19,33 @@ export class ParseVariableError extends Error {
   constructor(message: string) { super(message) }
 }
 
-export function variable<A>(f: VariableParser<A>): ['default', VariableParser<A>] {
-  return ['default', f]
-}
-
-export function productionVariable<A>(f: VariableParser<A>): ['production', VariableParser<A>] {
-  return ['production', f]
-}
-
-export function optional<A>(f: (value: string) => A): VariableParser<A | undefined> {
+export function maybe<A>(f: (value: string) => A): VariableParser<A | undefined> {
   return (value: string | undefined) => value === undefined ? undefined : f(value)
 }
 
-export function required<A>(f: (value: string) => A): VariableParser<A> {
+export function defined<A>(f: (value: string) => A): VariableParser<A> {
   return (value: string | undefined) => {
     if (value === undefined) {
       throw new ParseVariableError('environment variable is not set properly')
     }
     return f(value)
   }
+}
+
+export function variable<R extends VariableRule, A>(rule: R, f: VariableParser<A>): [R, VariableParser<A>] {
+  return [rule, f]
+}
+
+export function production<A>(f: (v: string) => A): ['production', VariableParser<A>] {
+  return ['production', defined(f)]
+}
+
+export function optional<A>(f: (v: string) => A): ['default', VariableParser<A>] {
+  return ['default', maybe(f)]
+}
+
+export function required<A>(f: (v: string) => A): ['default', VariableParser<A>] {
+  return ['default', defined(f)]
 }
 
 export function string(value: string): string {

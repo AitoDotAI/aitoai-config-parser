@@ -5,28 +5,27 @@ import {
   string,
   boolean,
   number,
-  variable,
-  optional,
   parseVariables,
+  production,
+  optional,
   required,
-  productionVariable,
 } from '../../src/config'
 import { v4 as uuid } from 'uuid'
 
 const parseTestVariables = parseVariables({
-  A_STRING_VALUE: variable(optional(string)),
-  A_BOOLEAN_VALUE: variable(optional(boolean)),
-  A_NUMBER_VALUE: variable(optional(number)),
-  AN_EMPTY_VALUE: variable(optional(string)),
-  PORT: variable(optional(number)),
+  A_STRING_VALUE: optional(string),
+  A_BOOLEAN_VALUE: optional(boolean),
+  A_NUMBER_VALUE: optional(number),
+  AN_EMPTY_VALUE: optional(string),
+  PORT: optional(number),
 })
 
 const parseRequiredVariables = parseVariables({
-  A_REQUIRED_STRING_VALUE: variable(required(string)),
+  A_REQUIRED_STRING_VALUE: required(string),
 })
 
 const parseProductionVariables = parseVariables({
-  A_STRING_VALUE: productionVariable(required(string)),
+  A_STRING_VALUE: production(string),
 })
 
 type TestConfig = ReturnType<typeof parseTestVariables>
