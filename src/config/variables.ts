@@ -40,7 +40,7 @@ export function production<A>(f: (v: string) => A): ['production', VariableParse
   return ['production', defined(f)]
 }
 
-export function optional<A>(f: (v: string) => A): ['default', VariableParser<A>] {
+export function optional<A>(f: (v: string) => A): ['default', VariableParser<A | undefined>] {
   return ['default', maybe(f)]
 }
 
