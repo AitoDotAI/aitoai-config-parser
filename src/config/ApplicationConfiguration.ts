@@ -40,18 +40,26 @@ function nodeEnvironment(): NodeEnvironment {
   return process.env.NODE_ENV === 'production' ? 'production' : 'development'
 }
 
+function trim(s: string | undefined): string | undefined {
+  if (s === undefined) {
+    return undefined
+  }
+
+  return s.trim()
+}
+
 export function MakeApplicationConfiguration<T extends Record<string, ConfigDeclaration<any>>>(
   parse: ParseFunction<T>,
   configfilenames: string[] = [
-    `${process.env.AITO_CONFIG_DIR}/.env.${process.env.NODE_ENV}`,
-    `.env.${process.env.NODE_ENV}`,
-    `${process.env.AITO_CONFIG_DIR}/.env`,
-    process.env.DOTENV_CONFIG_PATH,
+    `${trim(process.env.AITO_CONFIG_DIR)}/.env.${trim(process.env.NODE_ENV)}`,
+    `.env.${trim(process.env.NODE_ENV)}`,
+    `${trim(process.env.AITO_CONFIG_DIR)}/.env`,
+    trim(process.env.DOTENV_CONFIG_PATH),
     '.env'
   ].filter(isNonEmptyString),
   defaultsFile: string = [
-    process.env.DOTENV_CONFIG_DEFAULTS,
-    `${process.env.AITO_CONFIG_DIR}/.env.defaults`,
+    trim(process.env.DOTENV_CONFIG_DEFAULTS),
+    `${trim(process.env.AITO_CONFIG_DIR)}/.env.defaults`,
     '.env.defaults'
   ].filter(isNonEmptyString)[0],
   includeDefaultsOnMissingFile = true,
