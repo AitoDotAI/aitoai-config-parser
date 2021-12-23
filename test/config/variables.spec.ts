@@ -1,4 +1,4 @@
-import { boolean, number, defined } from "@libs/server/config"
+import { boolean, number, defined } from '@libs/server/config'
 
 describe('parseVariables', () => {
   describe('boolean', () => {
@@ -9,13 +9,17 @@ describe('parseVariables', () => {
 
   describe('number', () => {
     it('should throw exception if casting wrong type to number', () => {
-      expect(() => number('a string value')).toThrowError(/Non-number value found/)
+      expect(() => number('a string value')).toThrowError(
+        /Non-number value found/,
+      )
     })
   })
 
   describe('required', () => {
     it('should throw exception if casting wrong type to number', () => {
-      expect(() => defined(number)(undefined)).toThrowError(/environment variable is not set properly/)
+      expect(() => defined(number)(undefined)).toThrowError(
+        /environment variable is not set properly/,
+      )
     })
   })
 })

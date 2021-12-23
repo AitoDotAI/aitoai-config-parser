@@ -1,4 +1,4 @@
-import path from "path"
+import path from 'path'
 import fs from 'fs'
 import dotenv = require('dotenv-extended')
 
@@ -7,7 +7,7 @@ import {
   ParseFunction,
   NodeEnvironment,
   ConfigTypeOf,
-} from "./variables"
+} from './variables'
 
 function isNonEmptyString(value: string | undefined): value is string {
   return typeof value === 'string' && value.trim() !== ''
@@ -21,9 +21,9 @@ function makeAbsolute(p: string): string {
   }
 }
 
-let processEnvConfig: undefined | dotenv.IEnvironmentMap
+let processEnvConfig: undefined | dotenv.IEnvironmentMap
 
-function getEnvironment(): dotenv.IEnvironmentMap  {
+function getEnvironment(): dotenv.IEnvironmentMap {
   if (!processEnvConfig) {
     processEnvConfig = {}
     for (const key in process.env) {
@@ -48,23 +48,25 @@ function trim(s: string | undefined): string | undefined {
   return s.trim()
 }
 
-export function MakeApplicationConfiguration<T extends Record<string, ConfigDeclaration<any>>>(
+export function MakeApplicationConfiguration<
+  T extends Record<string, ConfigDeclaration<any>>
+>(
   parse: ParseFunction<T>,
   configfilenames: string[] = [
     `${trim(process.env.AITO_CONFIG_DIR)}/.env.${trim(process.env.NODE_ENV)}`,
     `.env.${trim(process.env.NODE_ENV)}`,
     `${trim(process.env.AITO_CONFIG_DIR)}/.env`,
     trim(process.env.DOTENV_CONFIG_PATH),
-    '.env'
+    '.env',
   ].filter(isNonEmptyString),
   defaultsFile: string = [
     trim(process.env.DOTENV_CONFIG_DEFAULTS),
     `${trim(process.env.AITO_CONFIG_DIR)}/.env.defaults`,
-    '.env.defaults'
+    '.env.defaults',
   ].filter(isNonEmptyString)[0],
   includeDefaultsOnMissingFile = true,
   traceLevelLogging = false,
-): (new() => ConfigTypeOf<T>) {
+): new () => ConfigTypeOf<T> {
   function loadFileConfig() {
     const defaultDotenvConfig = {
       assignToProcessEnv: false,
@@ -105,7 +107,11 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
     }
 
     if (traceLevelLogging) {
-      console.log(`ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify([...fileConfigFiles, absoluteDefaultsFile])}`)
+      console.log(
+        `ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify(
+          [...fileConfigFiles, absoluteDefaultsFile],
+        )}`,
+      )
     }
 
     return { ...defaultConfig, ...fileBasedConfig }
@@ -119,13 +125,13 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
 
       const result = parse(environmentConfig, fileBasedConfig, env)
 
-      Object.getOwnPropertyNames(result).forEach((name) => {
+      Object.getOwnPropertyNames(result).forEach(name => {
         Object.defineProperty(this, name, {
           enumerable: true,
           writable: false,
-          value: result[name]
+          value: result[name],
         })
       })
     }
-  } as new() => ConfigTypeOf<T>
+  } as new () => ConfigTypeOf<T>
 }

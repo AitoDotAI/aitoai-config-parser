@@ -44,18 +44,28 @@ describe('ApplicationConfiguration', () => {
     const missingFile = resolve(__dirname, temp)
     expect(existsSync(missingFile)).toBeFalsy()
 
-    return new (MakeApplicationConfiguration(parseTestVariables, [missingFile], testDefaultsFile))
+    return new (MakeApplicationConfiguration(
+      parseTestVariables,
+      [missingFile],
+      testDefaultsFile,
+    ))()
   }
 
   beforeEach(async () => {
     nodeEnv = process.env.NODE_ENV || 'test'
-    appConfig = new (MakeApplicationConfiguration(parseTestVariables, [testConfigFile]))
-    appConfigWithDefaults = new (MakeApplicationConfiguration(parseTestVariables, [testConfigFile], testDefaultsFile))
+    appConfig = new (MakeApplicationConfiguration(parseTestVariables, [
+      testConfigFile,
+    ]))()
+    appConfigWithDefaults = new (MakeApplicationConfiguration(
+      parseTestVariables,
+      [testConfigFile],
+      testDefaultsFile,
+    ))()
     missingAppConfig = createConfigFromMissingFile()
   })
 
   afterEach(async () => {
-    (process.env as any).NODE_ENV = nodeEnv
+    ;(process.env as any).NODE_ENV = nodeEnv
   })
 
   it('should load the config from the specified file', () => {
@@ -66,24 +76,40 @@ describe('ApplicationConfiguration', () => {
 
   it('should throw error for missing required variable', () => {
     function call() {
-      new (MakeApplicationConfiguration(parseRequiredVariables, [testConfigFile], testDefaultsFile))
+      new (MakeApplicationConfiguration(
+        parseRequiredVariables,
+        [testConfigFile],
+        testDefaultsFile,
+      ))()
     }
 
-    expect(call).toThrowError(/A_REQUIRED_STRING_VALUE is invalid: environment variable is not set properly/)
+    expect(call).toThrowError(
+      /A_REQUIRED_STRING_VALUE is invalid: environment variable is not set properly/,
+    )
   })
 
   it('should fail for production values coming from config file when in production', () => {
-    (process.env as any).NODE_ENV = 'production'
+    ;(process.env as any).NODE_ENV = 'production'
 
     function call() {
-      new (MakeApplicationConfiguration(parseProductionVariables, [testConfigFile], testDefaultsFile))
+      new (MakeApplicationConfiguration(
+        parseProductionVariables,
+        [testConfigFile],
+        testDefaultsFile,
+      ))()
     }
 
-    expect(call).toThrowError(/A_STRING_VALUE is invalid: environment variable is not set properly/)
+    expect(call).toThrowError(
+      /A_STRING_VALUE is invalid: environment variable is not set properly/,
+    )
   })
 
   it('should accept defaults for ProductionEnv when not in production', () => {
-    const config = new (MakeApplicationConfiguration(parseProductionVariables, [testConfigFile], testDefaultsFile))
+    const config = new (MakeApplicationConfiguration(
+      parseProductionVariables,
+      [testConfigFile],
+      testDefaultsFile,
+    ))()
 
     expect(config.A_STRING_VALUE).toEqual('A_CONFIG_VALUE')
   })
@@ -94,7 +120,9 @@ describe('ApplicationConfiguration', () => {
 
   it('should be true that there is a defaults file', () => {
     expect(existsSync(testDefaultsFile)).toBeTruthy()
-    expect(readFileSync(testDefaultsFile, { encoding: 'utf8' }).match(/PORT=\d+/))
+    expect(
+      readFileSync(testDefaultsFile, { encoding: 'utf8' }).match(/PORT=\d+/),
+    )
   })
 
   it('should use defaults for keys not find in config', () => {
@@ -103,7 +131,9 @@ describe('ApplicationConfiguration', () => {
 
   it('should by default load defaults even in case the actual file is not found', () => {
     expect(missingAppConfig.PORT).toBeGreaterThan(0)
-    expect(missingAppConfig.A_STRING_VALUE).toEqual('OVERRIDE_OF_THE_ACTUAL_VALUES_IN_ENV_DEFAULTS')
+    expect(missingAppConfig.A_STRING_VALUE).toEqual(
+      'OVERRIDE_OF_THE_ACTUAL_VALUES_IN_ENV_DEFAULTS',
+    )
   })
 
   it('should allow not to load defaults on config when the actual file is not found', () => {
@@ -111,14 +141,21 @@ describe('ApplicationConfiguration', () => {
     const missingFile = resolve(__dirname, temp)
     expect(existsSync(missingFile)).toBeFalsy()
 
-    appConfig = new (MakeApplicationConfiguration(parseTestVariables, [missingFile], testDefaultsFile, false))
+    appConfig = new (MakeApplicationConfiguration(
+      parseTestVariables,
+      [missingFile],
+      testDefaultsFile,
+      false,
+    ))()
 
     expect(appConfig.PORT).toBeUndefined()
   })
 
   it('should not override config values with defaults', () => {
     expect(appConfigWithDefaults.A_STRING_VALUE).toEqual('A_CONFIG_VALUE')
-    expect(missingAppConfig.A_STRING_VALUE).toEqual('OVERRIDE_OF_THE_ACTUAL_VALUES_IN_ENV_DEFAULTS')
+    expect(missingAppConfig.A_STRING_VALUE).toEqual(
+      'OVERRIDE_OF_THE_ACTUAL_VALUES_IN_ENV_DEFAULTS',
+    )
   })
 
   it('should leave keys empty if defaults file not found', () => {
@@ -126,7 +163,12 @@ describe('ApplicationConfiguration', () => {
     const missingFile = resolve(__dirname, temp)
     expect(existsSync(missingFile)).toBeFalsy()
 
-    appConfig = new (MakeApplicationConfiguration(parseTestVariables, [missingFile], missingFile, false))
+    appConfig = new (MakeApplicationConfiguration(
+      parseTestVariables,
+      [missingFile],
+      missingFile,
+      false,
+    ))()
 
     expect(appConfig.PORT).toBeUndefined()
   })
