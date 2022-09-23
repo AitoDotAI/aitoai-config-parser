@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import {
   MakeApplicationConfiguration,
+} from '../../src/config/ApplicationConfiguration'
+import {
   string,
   boolean,
   number,
@@ -9,7 +11,7 @@ import {
   production,
   optional,
   required,
-} from '../../src/config'
+} from '../../src/config/variables'
 import { v4 as uuid } from 'uuid'
 
 const parseTestVariables = parseVariables({

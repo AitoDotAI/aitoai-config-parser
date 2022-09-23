@@ -1,4 +1,4 @@
-import { boolean, number, defined } from '@libs/server/config'
+import { boolean, number, defined } from '../../src/config/variables'
 
 describe('parseVariables', () => {
   describe('boolean', () => {
