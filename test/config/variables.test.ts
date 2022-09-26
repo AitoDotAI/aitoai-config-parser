@@ -1,3 +1,6 @@
+/**
+ * Licensed under the Apache License, Version 2.0.
+ */
 import { boolean, number, defined } from '../../src/config/variables'
 
 describe('parseVariables', () => {

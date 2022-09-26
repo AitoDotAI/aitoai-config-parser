@@ -1,3 +1,6 @@
+/**
+ * Licensed under the Apache License, Version 2.0.
+ */
 import path from 'path'
 import fs from 'fs'
 import AppRootPath from 'app-root-path'

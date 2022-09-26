@@ -1,3 +1,6 @@
+/**
+ * Licensed under the Apache License, Version 2.0.
+ */
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import { MakeApplicationConfiguration } from '../../src/config/ApplicationConfiguration'
