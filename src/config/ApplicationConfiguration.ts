@@ -4,7 +4,7 @@
 import path from 'path'
 import fs from 'fs'
 import AppRootPath from 'app-root-path'
-import dotenv = require('dotenv-extended')
+import * as dotenv from 'dotenv-extended'
 
 import { ConfigDeclaration, ParseFunction, NodeEnvironment, ConfigTypeOf } from './variables'
 
