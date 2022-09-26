@@ -4,13 +4,13 @@
   },
   "hooks": {
     "before:init": ["npm audit", "npm run clean", "npm run prettier-check", "npm run lint", "npm run test", "npm run build"],
-    "before:release": "cp ./README* LICENSE NOTICE dist/.",
+    "before:release": "cp package.json package-lock.json ./README* LICENSE NOTICE dist/.",
     "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   },
   "npm": {
     "publishConfig": {
       "access": "public"
     },
-    "publishPath": "dist"
+    "publishPath": "./dist"
   }
 }
