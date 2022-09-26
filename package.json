@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@aitodotai/aitoai-config-parser",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Simple config parser with typechecking and support for auto-complete",
   "main": "index.js",
   "repository": {
