@@ -21,11 +21,7 @@ export type ParseFunction<T extends Record<string, ConfigDeclaration<any>>> = (
   context?: NodeEnvironment,
 ) => ConfigTypeOf<T>
 
-export class ParseVariableError extends Error {
-  constructor(message: string) {
-    super(message)
-  }
-}
+export class ParseVariableError extends Error {}
 
 export function maybe<A>(f: (value: string) => A): VariableParser<A | undefined> {
   return (value: string | undefined) => (value === undefined ? undefined : f(value))
@@ -84,6 +80,7 @@ export function parseVariables<T extends Record<string, ConfigDeclaration<any>>>
     const productionSources = isProd ? [environment] : [environment, file]
 
     const result: any = {}
+    /* eslint-disable-next-line no-restricted-syntax */
     for (const key of Object.keys(definition)) {
       const [rules, parse] = definition[key]
 

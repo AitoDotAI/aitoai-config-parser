@@ -1,11 +1,13 @@
 /**
  * Licensed under the Apache License, Version 2.0.
  */
+
+/* eslint-disable no-new */
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
+import { v4 as uuid } from 'uuid'
 import { MakeApplicationConfiguration } from '../../src/config/ApplicationConfiguration'
 import { string, boolean, number, parseVariables, production, optional, required } from '../../src/config/variables'
-import { v4 as uuid } from 'uuid'
 
 const parseTestVariables = parseVariables({
   A_STRING_VALUE: optional(string),
@@ -128,8 +130,8 @@ describe('ApplicationConfiguration', () => {
 
     appConfig = new (MakeApplicationConfiguration(parseTestVariables, [missingFile], missingFile, {
       includeDefaultsOnMissingFile: false,
-      loggerFn: (_s: string) => {
-        callCount = callCount + 1
+      loggerFn: () => {
+        callCount += 1
       },
     }))()
 

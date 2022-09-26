@@ -23,9 +23,8 @@ function fileExists(value: string | undefined): boolean {
 function makeAbsolute(p: string): string {
   if (path.isAbsolute(p)) {
     return p
-  } else {
-    return path.resolve(process.cwd(), p)
   }
+  return path.resolve(process.cwd(), p)
 }
 
 let processEnvConfig: undefined | dotenv.IEnvironmentMap
@@ -33,6 +32,7 @@ let processEnvConfig: undefined | dotenv.IEnvironmentMap
 function getEnvironment(): dotenv.IEnvironmentMap {
   if (!processEnvConfig) {
     processEnvConfig = {}
+    /* eslint-disable no-restricted-syntax, guard-for-in */
     for (const key in process.env) {
       const value = process.env[key]
       if (typeof value === 'string') {
@@ -45,14 +45,6 @@ function getEnvironment(): dotenv.IEnvironmentMap {
 
 function nodeEnvironment(): NodeEnvironment {
   return process.env.NODE_ENV === 'production' ? 'production' : 'development'
-}
-
-function trim(s: string | undefined): string | undefined {
-  if (s === undefined) {
-    return undefined
-  }
-
-  return s.trim()
 }
 
 export function MakeApplicationConfiguration<T extends Record<string, ConfigDeclaration<any>>>(
@@ -69,7 +61,7 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
     loggerFn?: (msg: string) => void
   } = {},
 ): new () => ConfigTypeOf<T> {
-  const { includeDefaultsOnMissingFile = true, loggerFn = (_s: string) => undefined } = parseOptions
+  const { includeDefaultsOnMissingFile = true, loggerFn = () => undefined } = parseOptions
 
   function loadFileConfig() {
     const defaultDotenvConfig = {
@@ -92,9 +84,7 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
         })
         return loadedConfig
       })
-      .reduceRight((acc: dotenv.IEnvironmentMap, next: dotenv.IEnvironmentMap) => {
-        return { ...acc, ...next }
-      }, {} as dotenv.IEnvironmentMap)
+      .reduceRight((acc: dotenv.IEnvironmentMap, next: dotenv.IEnvironmentMap) => ({ ...acc, ...next }), {} as dotenv.IEnvironmentMap)
 
     let defaultConfig = {} as dotenv.IEnvironmentMap
 
