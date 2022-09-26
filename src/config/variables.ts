@@ -40,14 +40,31 @@ export function variable<R extends VariableRule, A>(rule: R, f: VariableParser<A
   return [rule, f]
 }
 
+/**
+ * Mark the variable as required _in production_. This variable is optional in other
+ * modes. Production is decided based on the NODE_ENV defined for the runtime.
+ *
+ * @param f
+ * @returns
+ */
 export function production<A>(f: (v: string) => A): ['production', VariableParser<A>] {
   return ['production', defined(f)]
 }
 
+/**
+ * Mark the variable as optional in all contexts.
+ * @param f
+ * @returns
+ */
 export function optional<A>(f: (v: string) => A): ['default', VariableParser<A | undefined>] {
   return ['default', maybe(f)]
 }
 
+/**
+ * Mar the variable as required in all contexts.
+ * @param f
+ * @returns
+ */
 export function required<A>(f: (v: string) => A): ['default', VariableParser<A>] {
   return ['default', defined(f)]
 }
