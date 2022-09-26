@@ -1,6 +1,6 @@
 {
   "name": "@aitodotai/aitoai-config-parser",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Simple config parser with typechecking and support for auto-complete",
   "main": "index.js",
   "repository": {
