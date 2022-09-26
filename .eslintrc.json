@@ -5,7 +5,7 @@
     "prettier"
   ],
   "parserOptions": {
-    "project": ["./tsconfig.json"]
+    "project": ["./tsconfig.all.json"]
   },
   "rules": {
     "import/prefer-default-export": 0,
