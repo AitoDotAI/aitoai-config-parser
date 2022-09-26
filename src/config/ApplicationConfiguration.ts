@@ -3,12 +3,7 @@ import fs from 'fs'
 import AppRootPath from 'app-root-path'
 import dotenv = require('dotenv-extended')
 
-import {
-  ConfigDeclaration,
-  ParseFunction,
-  NodeEnvironment,
-  ConfigTypeOf,
-} from './variables'
+import { ConfigDeclaration, ParseFunction, NodeEnvironment, ConfigTypeOf } from './variables'
 
 function isNonEmptyString(value: string | undefined): value is string {
   return typeof value === 'string' && value.trim() !== ''
@@ -57,22 +52,19 @@ function trim(s: string | undefined): string | undefined {
   return s.trim()
 }
 
-export function MakeApplicationConfiguration<
-  T extends Record<string, ConfigDeclaration<any>>
->(
+export function MakeApplicationConfiguration<T extends Record<string, ConfigDeclaration<any>>>(
   parse: ParseFunction<T>,
-  configfilenames: string[] = [
-    AppRootPath.resolve(`.env.${nodeEnvironment()}`),
-    AppRootPath.resolve('.env'),
-  ].filter(isNonEmptyString).filter(fileExists),
-  defaultsFile: string | undefined = [
-    AppRootPath.resolve(`.env.defaults.${nodeEnvironment()}`),
-    AppRootPath.resolve('.env.defaults'),
-  ].filter(isNonEmptyString).filter(fileExists).shift(),
+  configfilenames: string[] = [AppRootPath.resolve(`.env.${nodeEnvironment()}`), AppRootPath.resolve('.env')]
+    .filter(isNonEmptyString)
+    .filter(fileExists),
+  defaultsFile: string | undefined = [AppRootPath.resolve(`.env.defaults.${nodeEnvironment()}`), AppRootPath.resolve('.env.defaults')]
+    .filter(isNonEmptyString)
+    .filter(fileExists)
+    .shift(),
   parseOptions: {
-    includeDefaultsOnMissingFile?: boolean,
+    includeDefaultsOnMissingFile?: boolean
     loggerFn?: (msg: string) => void
-  } = {}
+  } = {},
 ): new () => ConfigTypeOf<T> {
   const { includeDefaultsOnMissingFile = true, loggerFn = (_s: string) => undefined } = parseOptions
 
@@ -85,12 +77,10 @@ export function MakeApplicationConfiguration<
 
     const absoluteDefaultsFile = makeAbsolute(defaultsFile)
 
-    const fileConfigFiles = configfilenames
-      .map(cf => makeAbsolute(cf))
-      .filter(fqfn => fs.existsSync(fqfn))
+    const fileConfigFiles = configfilenames.map((cf) => makeAbsolute(cf)).filter((fqfn) => fs.existsSync(fqfn))
 
     const fileBasedConfig = fileConfigFiles
-      .map(fp => {
+      .map((fp) => {
         // Load the config, but exclude process.env-values
         const loadedConfig = dotenv.load({
           ...defaultDotenvConfig,
@@ -99,12 +89,9 @@ export function MakeApplicationConfiguration<
         })
         return loadedConfig
       })
-      .reduceRight(
-        (acc: dotenv.IEnvironmentMap, next: dotenv.IEnvironmentMap) => {
-          return { ...acc, ...next }
-        },
-        {} as dotenv.IEnvironmentMap,
-      )
+      .reduceRight((acc: dotenv.IEnvironmentMap, next: dotenv.IEnvironmentMap) => {
+        return { ...acc, ...next }
+      }, {} as dotenv.IEnvironmentMap)
 
     let defaultConfig = {} as dotenv.IEnvironmentMap
 
@@ -116,11 +103,11 @@ export function MakeApplicationConfiguration<
     }
 
     loggerFn(
-      `ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify(
-        [...fileConfigFiles, absoluteDefaultsFile],
-      )}`,
+      `ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify([
+        ...fileConfigFiles,
+        absoluteDefaultsFile,
+      ])}`,
     )
-
 
     return { ...defaultConfig, ...fileBasedConfig }
   }
@@ -133,7 +120,7 @@ export function MakeApplicationConfiguration<
 
       const result = parse(environmentConfig, fileBasedConfig, env)
 
-      Object.getOwnPropertyNames(result).forEach(name => {
+      Object.getOwnPropertyNames(result).forEach((name) => {
         Object.defineProperty(this, name, {
           enumerable: true,
           writable: false,

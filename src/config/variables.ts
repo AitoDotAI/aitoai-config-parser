@@ -6,12 +6,7 @@ export type VariableRule = 'production' | 'default'
 export type VariableParser<A> = (value: string | undefined) => A
 export type ConfigDeclaration<A> = [VariableRule, VariableParser<A>]
 
-type DefinedType<A extends ConfigDeclaration<any>> = A extends [
-  VariableRule,
-  VariableParser<infer B>,
-]
-  ? B
-  : never
+type DefinedType<A extends ConfigDeclaration<any>> = A extends [VariableRule, VariableParser<infer B>] ? B : never
 
 export type ConfigTypeOf<T extends Record<string, ConfigDeclaration<any>>> = {
   readonly [key in keyof T]: DefinedType<T[key]>
@@ -29,11 +24,8 @@ export class ParseVariableError extends Error {
   }
 }
 
-export function maybe<A>(
-  f: (value: string) => A,
-): VariableParser<A | undefined> {
-  return (value: string | undefined) =>
-    value === undefined ? undefined : f(value)
+export function maybe<A>(f: (value: string) => A): VariableParser<A | undefined> {
+  return (value: string | undefined) => (value === undefined ? undefined : f(value))
 }
 
 export function defined<A>(f: (value: string) => A): VariableParser<A> {
@@ -45,28 +37,19 @@ export function defined<A>(f: (value: string) => A): VariableParser<A> {
   }
 }
 
-export function variable<R extends VariableRule, A>(
-  rule: R,
-  f: VariableParser<A>,
-): [R, VariableParser<A>] {
+export function variable<R extends VariableRule, A>(rule: R, f: VariableParser<A>): [R, VariableParser<A>] {
   return [rule, f]
 }
 
-export function production<A>(
-  f: (v: string) => A,
-): ['production', VariableParser<A>] {
+export function production<A>(f: (v: string) => A): ['production', VariableParser<A>] {
   return ['production', defined(f)]
 }
 
-export function optional<A>(
-  f: (v: string) => A,
-): ['default', VariableParser<A | undefined>] {
+export function optional<A>(f: (v: string) => A): ['default', VariableParser<A | undefined>] {
   return ['default', maybe(f)]
 }
 
-export function required<A>(
-  f: (v: string) => A,
-): ['default', VariableParser<A>] {
+export function required<A>(f: (v: string) => A): ['default', VariableParser<A>] {
   return ['default', defined(f)]
 }
 
@@ -89,9 +72,7 @@ export function number(value: string): number {
   throw new ParseVariableError(`Non-number value found: ${value}`)
 }
 
-export function parseVariables<
-  T extends Record<string, ConfigDeclaration<any>>
->(definition: T): ParseFunction<T> {
+export function parseVariables<T extends Record<string, ConfigDeclaration<any>>>(definition: T): ParseFunction<T> {
   return (environment, file, context) => {
     const isProd = context === 'production'
 
@@ -106,7 +87,7 @@ export function parseVariables<
       const sources = rules === 'production' ? productionSources : configSources
       try {
         // Find first match of sources
-        const source = sources.find(map => key in map)
+        const source = sources.find((map) => key in map)
         const value: string | undefined = source && source[key]
         result[key] = parse(value)
       } catch (e) {
