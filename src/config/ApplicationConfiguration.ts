@@ -75,7 +75,7 @@ export function MakeApplicationConfiguration<T extends Record<string, ConfigDecl
       overrideProcessEnv: false,
     }
 
-    const absoluteDefaultsFile = makeAbsolute(defaultsFile)
+    const absoluteDefaultsFile = defaultsFile ? makeAbsolute(defaultsFile) : undefined
 
     const fileConfigFiles = configfilenames.map((cf) => makeAbsolute(cf)).filter((fqfn) => fs.existsSync(fqfn))
 
