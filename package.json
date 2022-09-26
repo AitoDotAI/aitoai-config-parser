@@ -12,7 +12,6 @@
     "clean": "rm -rf dist",
     "test": "jest",
     "build": "tsc --strict",
-    "pre-release": "npm audit && npm run clean && npm run prettier-check && npm run lint && npm run test && npm run build",
     "release": "release-it",
     "lint": "eslint src test --ext .ts",
     "prettier-check": "prettier --config .prettierrc.json --check 'src/**/*ts*' --check 'test/**/*.ts*'",

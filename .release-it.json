@@ -1,0 +1,15 @@
+{
+  "github": {
+    "release": true
+  },
+  "hooks": {
+    "before:init": ["npm audit", "npm run clean", "npm run prettier-check", "npm run lint", "npm run test", "npm run build"],
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  },
+  "npm": {
+    "publishConfig": {
+      "access": "public"
+    },
+    "publishPath": "dist"
+  }
+}
