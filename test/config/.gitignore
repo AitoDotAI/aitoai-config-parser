@@ -1,0 +1,7 @@
+# Environment files which contain secrets
+.env*
+!.env.defaults
+!.env.schema
+!.env.sample
+!.env.test.*
+!.env.appconfig*
