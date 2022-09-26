@@ -5,10 +5,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean": "rm -rf dist",
     "test": "jest",
+    "build": "tsc",
+    "pre-release": "npm audit && npm run clean && npm run prettier-check && npm run lint && npm run test && npm run build",
     "lint": "eslint src test --ext .ts",
-    "prettier-check": "prettier --config .prettierrc.json --check '{src,test}/*.ts*'",
-    "prettier-reformat": "prettier --config .prettierrc.json --write '{src,test}/**/*.ts*'",
+    "prettier-check": "prettier --config .prettierrc.json --check 'src/**/*ts*' --check 'test/**/*.ts*'",
+    "prettier-reformat": "prettier --config .prettierrc.json --write 'src/**/*ts*' --write 'test/**/*.ts*'",
     "make-pretty": "npm run prettier-reformat"
   },
   "author": "Chistoffer Ventus <christoffer@aito.ai>",

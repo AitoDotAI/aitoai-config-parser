@@ -15,9 +15,14 @@
     "outDir": "./dist",
     "rootDir": "./.",
     "incremental": true,
+    "skipLibCheck": true
   },
+  "include": [
+    "./src"
+  ],
   "exclude": [
-    "node_modules",
-    "dist"
+    "./test",
+    "./node_modules",
+    "./dist"
   ]
 }
