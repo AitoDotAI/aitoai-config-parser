@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc --strict",
     "pre-release": "npm audit && npm run clean && npm run prettier-check && npm run lint && npm run test && npm run build",
     "release": "release-it",
     "lint": "eslint src test --ext .ts",
