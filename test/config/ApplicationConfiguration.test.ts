@@ -37,13 +37,14 @@ describe('ApplicationConfiguration', () => {
   let appConfig: TestConfig
   let appConfigWithDefaults: TestConfig
   let missingAppConfig: TestConfig
+  let missingFile: string
 
   const testConfigFile = resolve(__dirname, '.env.appconfig.test')
   const testDefaultsFile = resolve(__dirname, '.env.test.appconfig.defaults')
 
   const createConfigFromMissingFile = (): TestConfig => {
     const temp = uuid()
-    const missingFile = resolve(__dirname, temp)
+    missingFile = resolve(__dirname, temp)
     expect(existsSync(missingFile)).toBeFalsy()
 
     return new (MakeApplicationConfiguration(
@@ -139,15 +140,11 @@ describe('ApplicationConfiguration', () => {
   })
 
   it('should allow not to load defaults on config when the actual file is not found', () => {
-    const temp = uuid()
-    const missingFile = resolve(__dirname, temp)
-    expect(existsSync(missingFile)).toBeFalsy()
-
     appConfig = new (MakeApplicationConfiguration(
       parseTestVariables,
       [missingFile],
       testDefaultsFile,
-      false,
+      { includeDefaultsOnMissingFile: false },
     ))()
 
     expect(appConfig.PORT).toBeUndefined()
@@ -161,17 +158,26 @@ describe('ApplicationConfiguration', () => {
   })
 
   it('should leave keys empty if defaults file not found', () => {
-    const temp = uuid()
-    const missingFile = resolve(__dirname, temp)
-    expect(existsSync(missingFile)).toBeFalsy()
+    appConfig = new (MakeApplicationConfiguration(
+      parseTestVariables,
+      [missingFile],
+      missingFile,
+      { includeDefaultsOnMissingFile: false },
+    ))()
+
+    expect(appConfig.PORT).toBeUndefined()
+  })
+
+  it('should log something using the provided function', () => {
+    let callCount = 0
 
     appConfig = new (MakeApplicationConfiguration(
       parseTestVariables,
       [missingFile],
       missingFile,
-      false,
+      { includeDefaultsOnMissingFile: false, loggerFn: (_s: string) => { callCount = callCount + 1 }},
     ))()
 
-    expect(appConfig.PORT).toBeUndefined()
+    expect(callCount).toBeGreaterThan(0)
   })
 })
