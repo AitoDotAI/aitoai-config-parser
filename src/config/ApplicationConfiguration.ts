@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import AppRootPath from 'app-root-path'
 import dotenv = require('dotenv-extended')
 
 import {
@@ -11,6 +12,14 @@ import {
 
 function isNonEmptyString(value: string | undefined): value is string {
   return typeof value === 'string' && value.trim() !== ''
+}
+
+function fileExists(value: string | undefined): boolean {
+  if (!value) {
+    return false
+  }
+
+  return fs.existsSync(value)
 }
 
 function makeAbsolute(p: string): string {
@@ -53,20 +62,20 @@ export function MakeApplicationConfiguration<
 >(
   parse: ParseFunction<T>,
   configfilenames: string[] = [
-    `${trim(process.env.AITO_CONFIG_DIR)}/.env.${trim(process.env.NODE_ENV)}`,
-    `.env.${trim(process.env.NODE_ENV)}`,
-    `${trim(process.env.AITO_CONFIG_DIR)}/.env`,
-    trim(process.env.DOTENV_CONFIG_PATH),
-    '.env',
-  ].filter(isNonEmptyString),
-  defaultsFile: string = [
-    trim(process.env.DOTENV_CONFIG_DEFAULTS),
-    `${trim(process.env.AITO_CONFIG_DIR)}/.env.defaults`,
-    '.env.defaults',
-  ].filter(isNonEmptyString)[0],
-  includeDefaultsOnMissingFile = true,
-  traceLevelLogging = false,
+    AppRootPath.resolve(`.env.${nodeEnvironment()}`),
+    AppRootPath.resolve('.env'),
+  ].filter(isNonEmptyString).filter(fileExists),
+  defaultsFile: string | undefined = [
+    AppRootPath.resolve(`.env.defaults.${nodeEnvironment()}`),
+    AppRootPath.resolve('.env.defaults'),
+  ].filter(isNonEmptyString).filter(fileExists).shift(),
+  parseOptions: {
+    includeDefaultsOnMissingFile?: boolean,
+    loggerFn?: (msg: string) => void
+  } = {}
 ): new () => ConfigTypeOf<T> {
+  const { includeDefaultsOnMissingFile = true, loggerFn = (_s: string) => undefined } = parseOptions
+
   function loadFileConfig() {
     const defaultDotenvConfig = {
       assignToProcessEnv: false,
@@ -106,13 +115,12 @@ export function MakeApplicationConfiguration<
       })
     }
 
-    if (traceLevelLogging) {
-      console.log(
-        `ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify(
-          [...fileConfigFiles, absoluteDefaultsFile],
-        )}`,
-      )
-    }
+    loggerFn(
+      `ApplicationConfiguration is parsing the following files for env variables: ${JSON.stringify(
+        [...fileConfigFiles, absoluteDefaultsFile],
+      )}`,
+    )
+
 
     return { ...defaultConfig, ...fileBasedConfig }
   }
