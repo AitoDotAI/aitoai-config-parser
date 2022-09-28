@@ -97,6 +97,14 @@ export function number(value: string): number {
   throw new ParseVariableError(`Non-number value found: ${value}`)
 }
 
+export function url(value: string): URL {
+  try {
+    return new URL(value)
+  } catch (e) {
+    throw new ParseVariableError(`Value is not a valid URL: ${value}`)
+  }
+}
+
 export function parseVariables<T extends Record<string, ConfigDeclaration<any>>>(definition: T): ParseFunction<T> {
   return (environment, file, context) => {
     const isProd = context === 'production'

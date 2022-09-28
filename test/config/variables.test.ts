@@ -7,6 +7,7 @@ import {
   string,
   boolean,
   number,
+  url,
   defined,
   parseVariables,
   ConfigDeclaration,
@@ -16,14 +17,47 @@ import dotenv from 'dotenv-extended'
 
 describe('parseVariables', () => {
   describe('boolean', () => {
+    it('cast type to boolean', () => {
+      expect(boolean('true')).toEqual(true)
+      expect(boolean('false')).toEqual(false)
+    })
+
+    it('should throw exception for js-weird booleans', () => {
+      expect(() => boolean('1')).toThrowError(/Non-boolean value found/)
+      expect(() => boolean('0')).toThrowError(/Non-boolean value found/)
+      expect(() => boolean('')).toThrowError(/Non-boolean value found/)
+    })
+
     it('should throw exception if casting wrong type to boolean', () => {
       expect(() => boolean('1234')).toThrowError(/Non-boolean value found/)
     })
   })
 
   describe('number', () => {
+    it('should cast value to number', () => {
+      expect(number('123')).toEqual(123)
+    })
+
     it('should throw exception if casting wrong type to number', () => {
       expect(() => number('a string value')).toThrowError(/Non-number value found/)
+    })
+
+    it('should not accept positive infinite as a number', () => {
+      expect(() => number(`${Number.POSITIVE_INFINITY}`)).toThrowError(/Non-number value found/)
+    })
+
+    it('should not accept negative infinite as a number', () => {
+      expect(() => number(`${Number.NEGATIVE_INFINITY}`)).toThrowError(/Non-number value found/)
+    })
+  })
+
+  describe('url', () => {
+    it('should return the qualified URL', () => {
+      expect(url('https://aito.ai')).toEqual(new URL('https://aito.ai'))
+    })
+
+    it('should throw exception if not a fully qualified URL', () => {
+      expect(() => url('a string value')).toThrowError(/Value is not a valid URL/)
     })
   })
 
