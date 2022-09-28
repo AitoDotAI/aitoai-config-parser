@@ -1,6 +1,7 @@
 /**
  * Licensed under the Apache License, Version 2.0.
  */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import dotenv from 'dotenv-extended'
 import {
   optional,
@@ -79,14 +80,14 @@ describe('parseVariables', () => {
 
   describe('optional', () => {
     it('should should allow set filter for enum if value exists', () => {
-      const [rules, parse] = optional(v => ['one', 'of', 'expected'].find(s => s === v))
+      const [rules, parse] = optional((v) => ['one', 'of', 'expected'].find((s) => s === v))
 
       expect(parse('one')).toEqual('one')
       expect(parse(undefined)).toEqual(undefined)
     })
 
     it('should should to map value if exists', () => {
-      const [rules, parse] = optional(v => v.toUpperCase())
+      const [rules, parse] = optional((v) => v.toUpperCase())
 
       expect(parse('moro')).toEqual('MORO')
       expect(parse(undefined)).toEqual(undefined)
