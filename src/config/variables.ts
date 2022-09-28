@@ -23,6 +23,15 @@ export type ParseFunction<T extends Record<string, ConfigDeclaration<any>>> = (
 
 export class ParseVariableError extends Error {}
 
+export class CombinedParseVariableError extends Error {
+  readonly cause: Array<ParseVariableError>
+
+  constructor(arrayOfErrors: Array<ParseVariableError>) {
+    super(`There were ${arrayOfErrors?.length} errors while parsing. [${arrayOfErrors?.map((e) => e.message).join(', ')}]`)
+    this.cause = arrayOfErrors
+  }
+}
+
 export function maybe<A>(f: (value: string) => A): VariableParser<A | undefined> {
   return (value: string | undefined) => (value === undefined ? undefined : f(value))
 }
@@ -91,6 +100,7 @@ export function number(value: string): number {
 export function parseVariables<T extends Record<string, ConfigDeclaration<any>>>(definition: T): ParseFunction<T> {
   return (environment, file, context) => {
     const isProd = context === 'production'
+    const errors: Array<ParseVariableError> = []
 
     // Variable definition sources, from most to least authoritative
     const configSources = [environment, file]
@@ -109,11 +119,17 @@ export function parseVariables<T extends Record<string, ConfigDeclaration<any>>>
         result[key] = parse(value)
       } catch (e) {
         if (e instanceof ParseVariableError) {
-          throw new ParseVariableError(`${key} is invalid: ${e.message}`)
+          errors.push(new ParseVariableError(`${key} is invalid: ${e.message}`))
+        } else {
+          throw e
         }
-        throw e
       }
     }
+
+    if (errors.length > 0) {
+      throw new CombinedParseVariableError(errors)
+    }
+
     return result
   }
 }
