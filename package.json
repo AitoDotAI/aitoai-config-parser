@@ -1,6 +1,6 @@
 {
   "name": "@aitodotai/aitoai-config-parser",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Simple config parser with typechecking and support for auto-complete",
   "main": "index.js",
   "repository": {
@@ -21,10 +21,12 @@
     "name": "Chistoffer Ventus",
     "email": "christoffer@aito.ai"
   },
-  "contributors": [{
-    "name": "Kai Inkinen",
-    "email": "kai@aito.ai"
-  }],
+  "contributors": [
+    {
+      "name": "Kai Inkinen",
+      "email": "kai@aito.ai"
+    }
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "app-root-path": "^3.1.0",
