@@ -17,7 +17,14 @@
     "prettier-reformat": "prettier --config .prettierrc.json --write 'src/**/*ts*' --write 'test/**/*.ts*'",
     "make-pretty": "npm run prettier-reformat"
   },
-  "author": "Chistoffer Ventus <christoffer@aito.ai>",
+  "author": {
+    "name": "Chistoffer Ventus",
+    "email": "christoffer@aito.ai"
+  },
+  "contributors": [{
+    "name": "Kai Inkinen",
+    "email": "kai@aito.ai"
+  }],
   "license": "Apache-2.0",
   "dependencies": {
     "app-root-path": "^3.1.0",
