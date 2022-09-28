@@ -106,6 +106,10 @@ export function url(value: string): URL {
   }
 }
 
+export function urlstring(value: string): string {
+  return url(value).toString()
+}
+
 export function parseVariables<T extends Record<string, ConfigDeclaration<any>>>(definition: T): ParseFunction<T> {
   return (environment, file, context) => {
     const isProd = context === 'production'

@@ -9,6 +9,7 @@ import {
   boolean,
   number,
   url,
+  urlstring,
   defined,
   parseVariables,
   CombinedParseVariableError,
@@ -60,9 +61,35 @@ describe('parseVariables', () => {
     })
   })
 
+  describe('urlstring', () => {
+    it('should return the qualified URL as a string', () => {
+      expect(urlstring('https://aito.ai')).toEqual('https://aito.ai/')
+    })
+
+    it('should throw exception if not a fully qualified URL', () => {
+      expect(() => urlstring('a string value')).toThrowError(/Value is not a valid URL/)
+    })
+  })
+
   describe('required', () => {
     it('should throw exception if casting wrong type to number', () => {
       expect(() => defined(number)(undefined)).toThrowError(/environment variable is not set properly/)
+    })
+  })
+
+  describe('optional', () => {
+    it('should should allow set filter for enum if value exists', () => {
+      const [rules, parse] = optional(v => ['one', 'of', 'expected'].find(s => s === v))
+
+      expect(parse('one')).toEqual('one')
+      expect(parse(undefined)).toEqual(undefined)
+    })
+
+    it('should should to map value if exists', () => {
+      const [rules, parse] = optional(v => v.toUpperCase())
+
+      expect(parse('moro')).toEqual('MORO')
+      expect(parse(undefined)).toEqual(undefined)
     })
   })
 
