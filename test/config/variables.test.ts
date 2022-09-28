@@ -1,6 +1,7 @@
 /**
  * Licensed under the Apache License, Version 2.0.
  */
+import dotenv from 'dotenv-extended'
 import {
   optional,
   required,
@@ -10,10 +11,8 @@ import {
   url,
   defined,
   parseVariables,
-  ConfigDeclaration,
   CombinedParseVariableError,
 } from '../../src/config/variables'
-import dotenv from 'dotenv-extended'
 
 describe('parseVariables', () => {
   describe('boolean', () => {

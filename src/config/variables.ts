@@ -1,6 +1,7 @@
 /**
  * Licensed under the Apache License, Version 2.0.
  */
+/* eslint-disable max-classes-per-file */
 export type ConfigSource = Record<string, string>
 
 export type NodeEnvironment = 'development' | 'production'
