@@ -81,7 +81,7 @@ describe('parseVariables', () => {
   })
 
   describe('production', () => {
-    const withValues = { A_PROD_NUMBER: '123'}
+    const withValues = { A_PROD_NUMBER: '123' }
     const noValues = {}
     const sillyDefault = { A_PROD_NUMBER: Number.MAX_SAFE_INTEGER.toString() }
 
