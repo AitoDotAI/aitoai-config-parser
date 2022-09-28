@@ -29,12 +29,23 @@ allow for more customisable validation. (Todo for the future)
 
 ### Parsing modes
 
-The config parser supports two _modes_ for parsing. This allows to mark variables generally
-as either `required` or `optional`. Additionally a mode `production` is supported. When
-using `production` variables are optional _unless NODE_ENV === 'production'_. This is to
-help avoid bloated env files during local testing, but still benefiting from the
-variable checking.
+The config parser supports two _modes_ for parsing.
 
+1. `development`
+1. `production`
+
+In `development`-parsing the variables are fetched from env variables, env-file, and finally
+from the defaults-file, in this particular order. Once the variable is found, this value is
+validated against the rule-set. The default default file is ' `.env.defaults` and is versioned.
+
+In `production`-parsing the the "production" values will not use the defaults file. Hence, these
+variables *must be set in the application config*. The parsing uses firstly the env-variables,
+secondly the main config file. The defaults file *is not used*.
+
+These modes allow storing e.g. local passwords in the defaults, but ensuring they are set in
+the live config.
+
+Note: The default values are still expected to be a valid value
 
 ## Using and Contributing
 
