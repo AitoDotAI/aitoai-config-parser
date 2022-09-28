@@ -12,8 +12,10 @@ import {
   url,
   urlstring,
   defined,
+  production,
   parseVariables,
   CombinedParseVariableError,
+  NodeEnvironment,
 } from '../../src/config/variables'
 
 describe('parseVariables', () => {
@@ -75,6 +77,30 @@ describe('parseVariables', () => {
   describe('required', () => {
     it('should throw exception if casting wrong type to number', () => {
       expect(() => defined(number)(undefined)).toThrowError(/environment variable is not set properly/)
+    })
+  })
+
+  describe('production', () => {
+    const withValues = { A_PROD_NUMBER: '123'}
+    const noValues = {}
+    const sillyDefault = { A_PROD_NUMBER: Number.MAX_SAFE_INTEGER.toString() }
+
+    const declaration = {
+      A_PROD_NUMBER: production(number),
+    }
+
+    it('should parse the value normally in production mode', () => {
+      expect(parseVariables(declaration)(withValues, noValues, 'production').A_PROD_NUMBER).toEqual(123)
+    })
+
+    describe('missing but set in defaults', () => {
+      it('should use default when not in production mode', () => {
+        expect(parseVariables(declaration)(noValues, withValues, 'development').A_PROD_NUMBER).toEqual(123)
+      })
+
+      it('should not allow erroneous when in production mode', () => {
+        expect(() => parseVariables(declaration)(noValues, sillyDefault, 'production')).toThrowError()
+      })
     })
   })
 
