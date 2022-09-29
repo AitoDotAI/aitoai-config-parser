@@ -43,7 +43,8 @@ variables *must be set in the application config*. The parsing uses firstly the 
 secondly the main config file. The defaults file *is not used*.
 
 These modes allow storing e.g. local passwords in the defaults, but ensuring they are set in
-the live config.
+the live config. This also ensures we keep the declared type-contract. Missing values would
+otherwise be either optional of not, depending on the mode.
 
 Note: The default values are still expected to be a valid value
 
